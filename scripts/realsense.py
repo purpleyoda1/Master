@@ -4,6 +4,8 @@ import cv2
 import os
 from ultralytics import YOLO
 
+
+
 ###################################################################
 ###############            MISC                ####################
 ###################################################################
@@ -61,9 +63,6 @@ def capture_and_save_raw_depth_map(output_path):
     
     # Start stream
     profile = pipeline.start(config)
-
-    # Get depth sensor
-    depth_sensor = profile.get_device().first_depth_sensor()
     
     try:
         # Skip first 30 frames to stabilize
@@ -78,18 +77,9 @@ def capture_and_save_raw_depth_map(output_path):
         
         # Convert to numpy array and save
         depth_map = np.asanyarray(depth_frame.get_data())
-        depth_image_normalized = cv2.normalize(
-            depth_map, 
-            None, 
-            0, 
-            255, 
-            cv2.NORM_MINMAX
-        )
-        print(f"Shape: {depth_image_normalized.shape}")
-        print(f"{depth_image_normalized}")
-        print(f"Max value: {np.max(depth_image_normalized)}\nMin: {np.min(depth_image_normalized)}")
-        cv2.imwrite(output_path, depth_image_normalized)
-        print(f"Depth image saved to {output_path}")
+
+        cv2.imwrite(output_path, depth_map)
+        print(f"Depth map saved to {output_path}")
 
     finally:
         pipeline.stop()
@@ -144,9 +134,6 @@ def capture_and_save_normalized_depth_map(output_path, min_depth=0.1, max_depth=
         depth_normalized = (depth_normalized * 255).astype(np.uint8)
         depth_normalized = np.clip(depth_normalized, 0, 255)  # Ensure values are within [0, 255]
         print(f"[Depth] Normalized depth: min={depth_normalized.min()}, max={depth_normalized.max()}")
-
-        # Optional: Apply a color map for better visualization
-        #depth_colormap = cv2.applyColorMap(depth_normalized, cv2.COLORMAP_JET)
 
         # Save the depth image
         cv2.imwrite(output_path, depth_normalized)
@@ -225,11 +212,11 @@ def display_inference(model_path, confident_threshold= 0.5):
 
 
 def main():
-    filename = 'realsense_norm.png'
+    filename = 'realsense_report.png'
     script_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
     path = os.path.join(script_dir, 'Images', filename)
-    capture_and_save_normalized_depth_map(path)
+    capture_and_save_raw_depth_map(path)
 
     #check_depth_sensor()
     pass
