@@ -1,0 +1,7 @@
+path: /Users/sondr/Documents/NTNU/9_semester/prosjekt/synthetic_data/training
+train: images/train 
+val: images/val 
+
+nc: 1
+
+names: ['cylinder']
