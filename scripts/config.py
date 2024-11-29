@@ -16,7 +16,7 @@ class Config:
     @property
     def model_path(self) -> str:
         base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        relative_path = "scripts\\runs\\detect\\train4\\weights\\best.pt"
+        relative_path = "scripts/runs/detect/train4/weights/best.pt"
         return os.path.join(base_path, relative_path)
 
 
