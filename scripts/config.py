@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import os
 
 @dataclass
 class Config:
@@ -11,6 +12,11 @@ class Config:
     color_stream_fps: int = 30
 
     # YOLO model
-    model_path: str = 'C:\\Users\\sondr\\Documents\\NTNU\\9_semester\\prosjekt\\scripts\\runs\\detect\\train4\\weights\\best.pt'
-    confidence_threshold: float = 0.8
+    confidence_threshold: float = 0.85
+    @property
+    def model_path(self) -> str:
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        relative_path = "scripts\\runs\\detect\\train4\\weights\\best.pt"
+        return os.path.join(base_path, relative_path)
+
 
