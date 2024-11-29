@@ -36,37 +36,39 @@ def print_image_properties(image, image_name= "Image"):
 
 def analyze_depth_map(depth_map_path, title="Depth Map Analysis", save_path=None):
     """
-    Analyze depth map with title on left for vertical stacking
+    Analyze depth map with title on left for vertical stacking with consistent sizing
     """
     depth_map = read_depth_map(depth_map_path)
-    fig = plt.figure(figsize=(18, 4))
+    fig = plt.figure(figsize=(20, 4))
     
     # Add title to the left of the plots
-    plt.subplots_adjust(left=0.15)
-    fig.text(0.02, 0.5, title, rotation=0, verticalalignment='center', fontsize=10)
+    #plt.subplots_adjust(left=0.1)
+    fig.text(0.02, 0.5, title, rotation=0, verticalalignment='center', fontsize=22)
 
     # Convert and normalize
     depth_uint8 = cv2.normalize(depth_map, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
     depth_normalized = depth_uint8.astype(np.float32) / 255.0
     
     # Plot depth map
-    plt.subplot(121)
-    im = plt.imshow(depth_normalized, cmap='viridis')
-    plt.colorbar(im)
-    plt.title('Normalized Depth Map')
+    ax1 = plt.subplot(121)
+    im = ax1.imshow(depth_normalized, cmap='viridis')
+    cbar = plt.colorbar(im)
+    #plt.title('Normalized Depth Map')
+    ax1.set_xticks([])
+    ax1.set_yticks([])
     
     # Plot log histogram
-    plt.subplot(122)
+    ax2 = plt.subplot(122)
     plt.hist(depth_normalized.flatten(), bins=50, log=True)
-    plt.title('Depth Distribution\n(log scale)')
-    plt.xlabel('Normalized Depth (uint8/255)')
+    #plt.title('Depth Distribution\n(log scale)')
+    plt.xlabel('Normalized Depth')
     plt.ylabel('Count (log)')
     plt.grid(True, which="both", ls="-", alpha=0.2)
     
-    plt.tight_layout()  
+    plt.subplots_adjust(left=0.05, right=0.98, wspace=0.02)
     
     if save_path:
-        plt.savefig(save_path, bbox_inches='tight')
+        plt.savefig(save_path, bbox_inches='tight', pad_inches=0.1)
         
     plt.show()
     
@@ -180,11 +182,11 @@ def main():
     # ANALYZE
     script_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
-    filename = 'final'
+    filename = 'realsense_report'
     depth_map_path = os.path.join(parent_dir, 'synthetic_data', 'report', filename + '.png')
     save_path = os.path.join(parent_dir, 'synthetic_data', 'report', filename + '_plot')
 
-    analyze_depth_map(depth_map_path, 'Final', save_path)
+    analyze_depth_map(depth_map_path, 'Real', save_path)
 
 if __name__=="__main__":
     main()
