@@ -1,6 +1,7 @@
-path: /Users/sondr/Documents/NTNU/9_semester/prosjekt/synthetic_data/training
+path: /Users/sondr/Documents/NTNU/9_semester/prosjekt/synthetic_data/training_424x240
 train: images/train 
 val: images/val 
+test: images/test
 
 nc: 1
 
