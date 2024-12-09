@@ -12,7 +12,7 @@ class Config:
     color_stream_fps: int = 30
 
     # YOLO model
-    confidence_threshold: float = 0.85
+    confidence_threshold: float = 0.8
     @property
     def model_path(self) -> str:
         base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
