@@ -1,3 +1,4 @@
 5: ch1
 4: straight from blender
 7: v11 medium
+8: v11 small
