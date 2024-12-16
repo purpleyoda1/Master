@@ -4,6 +4,7 @@ from ultralytics import YOLO
 from typing import List
 from ultralytics.engine.results import Results
 import os
+import time
 
 class YoloModel:
     def __init__(self, model_path: str, confidence_threshold= 0.8):
@@ -76,31 +77,37 @@ class YoloModel:
         center_y = int((y1 + y2) / 2)
         return center_x, center_y
 
-    def evaluate(self, test_data, conf_thres=0.5, iou_thresh=0.5):
+    def evaluate(self, yaml_path, test_path, conf_thres=0.5, iou_thresh=0.5):
         """
         
         """
-        metrics = self.model.val(data=test_data, conf=conf_thres, iou=iou_thresh, verbose=True)
+        start_time = time.perf_counter()
+        predictions = self.model.predict(source=test_path, conf=conf_thres, iou=iou_thresh)
+        total_time = time.perf_counter() - start_time
+        avg_inference_time = (total_time / 284) * 1000
+
+        metrics = self.model.val(data=yaml_path, conf=conf_thres, iou=iou_thresh, verbose=True)
         results = {
             'Precision': metrics.results_dict['metrics/precision(B)'],
             'Recall': metrics.results_dict['metrics/recall(B)'],
             'mAP50': metrics.results_dict['metrics/mAP50(B)'],
             'mAP50-95': metrics.results_dict['metrics/mAP50-95(B)'],
-            'F1 Score': 2 * (metrics.results_dict['metrics/precision(B)'] * metrics.results_dict['metrics/recall(B)']) / (metrics.results_dict['metrics/precision(B)'] + metrics.results_dict['metrics/recall(B)'])
+            'F1 Score': 2 * (metrics.results_dict['metrics/precision(B)'] * metrics.results_dict['metrics/recall(B)']) / (metrics.results_dict['metrics/precision(B)'] + metrics.results_dict['metrics/recall(B)']),
+            'Inference time': avg_inference_time
         }
 
         print("\n" + "="*50)
-        print(f"Evaluation report on test data at {test_data}")
+        print(f"Evaluation report on test data at {test_path}")
         print("="*50)
 
         print(f"\nDetection Metrics:")
         print(f"{'Metric':<20} {'Value':<10}")
         print("-"*30)
         
-        metrics_to_print = ['Precision', 'Recall', 'F1 Score', 'mAP50', 'mAP50-95']
+        metrics_to_print = ['Precision', 'Recall', 'F1 Score', 'mAP50', 'mAP50-95', 'Inference time']
         for metric in metrics_to_print:
             print(f"{metric:<20} {results[metric]:.4f}")
-        
+
         print("\n" + "="*50)
 
         return results
@@ -109,8 +116,9 @@ class YoloModel:
 if __name__ == "__main__":
     base_path = os.path.dirname( os.path.abspath(__file__))
     yaml_path = os.path.join(base_path, 'data.yaml')
-    model_path = os.path.join(base_path, 'runs/detect/train7/weights/best.pt')
+    model_path = os.path.join(base_path, 'runs/detect/train8/weights/best.pt')
+    test_path = os.path.join(os.path.dirname(base_path), 'synthetic_data/training_424x240/images/test')
 
     model = YoloModel(model_path)
     model.load_model()   
-    model.evaluate(yaml_path)
+    model.evaluate(yaml_path, test_path)
